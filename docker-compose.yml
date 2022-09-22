@@ -1,0 +1,75 @@
+version: '3'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  # app:
+  #   build: .
+  #   environment:
+  #     DB_DNS: postgresql://postgres:postgres@postgres:5432/boilerplate?sslmode=disable
+  #     ENV: production
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - postgres
+
+  # scylla-node1:
+  #   container_name: scylla-node1
+  #   image: scylladb/scylla:4.5.0
+  #   restart: always
+  #   command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+  #   volumes:
+  #     - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+  #     - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+  #     - "./scylla/mutant-data.txt:/mutant-data.txt"
+  #   networks:
+  #     boilerplate_network:
+
+  # scylla-node2:
+  #   container_name: scylla-node2
+  #   image: scylladb/scylla:4.5.0
+  #   restart: always
+  #   command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+  #   volumes:
+  #     - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+  #     - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+  #   networks:
+  #     boilerplate_network:
+
+  # scylla-node3:
+  #   container_name: scylla-node3
+  #   image: scylladb/scylla:4.5.0
+  #   restart: always
+  #   command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+  #   volumes:
+  #     - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+  #     - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+  #   networks:
+  #     boilerplate_network:
+ 
+  cassandra:
+    image: cassandra:4.0
+    ports:
+      - 9042:9042
+    volumes:
+      - ~/apps/cassandra:/var/lib/cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=sms
+
+  postgres:
+      image: postgres
+      networks:
+        - boilerplate_network
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      environment:
+        POSTGRES_DB: boilerplate
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      ports:
+        - 5432:5432
+networks:
+  boilerplate_network:
