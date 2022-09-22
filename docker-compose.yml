@@ -56,7 +56,7 @@ services:
     volumes:
       - ~/apps/cassandra:/var/lib/cassandra
     environment:
-      - CASSANDRA_CLUSTER_NAME=sms
+      - CASSANDRA_CLUSTER_NAME=cluster
 
   postgres:
       image: postgres
